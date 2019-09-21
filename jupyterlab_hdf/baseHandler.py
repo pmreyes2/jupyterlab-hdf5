@@ -89,12 +89,45 @@ class HdfBaseHandler(APIHandler):
         """Based on an api request, get either the contents of a group or a
         slice of a dataset and return it as serialized JSON.
         """
+
+        def prejsondata(d):
+            """ Preparing the data for json.dumps. input 'd',
+            either a list of a dictionary will be modified.
+            bytes -> ascii
+            complex -> str
+            h5py.Empty -> ""
+            """
+            import h5py
+            def modify_list4json(dl):
+
+                for i,item in enumerate(dl):
+                    if isinstance(item,list):
+                        modify_list4json(item)
+                    else:
+                        if isinstance(item,complex):
+                            dl[i] = "{}".format(item)
+                        elif isinstance(item,bytes):
+                            dl[i] = item.decode('ascii')
+
+            if isinstance(d, list):
+                modify_list4json(d)
+            elif isinstance(d, dict):
+                for k, v in d.items():
+                    if isinstance(v, dict):
+                        prejsondata(v)
+                    else:
+                        if isinstance(v, bytes):
+                            d[k] = v.decode('ascii')
+                        elif isinstance(v, h5py.Empty):
+                            d[k] = ""
+
         uri = '/' + self.get_query_argument('uri').lstrip('/')
         row = self.getQueryArguments('row', int)
         col = self.getQueryArguments('col', int)
-
         try:
-            self.finish(json.dumps(self.manager.get(path, uri, row, col)))
+            out_data = self.manager.get(path, uri, row, col)
+            prejsondata(out_data)
+            self.finish(json.dumps(out_data))
 
         except HTTPError as err:
             self.set_status(err.code)
