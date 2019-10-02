@@ -15,7 +15,7 @@ def dsetChunk(dset, row, col):
         return [[dset.value]]
     if dset.ndim == 1:
         # For the case of arrays of one dimension
-        return [dset[slice(*col)].tolist()]
+        return dset[slice(*row)].tolist()
     return dset[slice(*row), slice(*col)].tolist()
 
 ## create dicts to be converted to json
@@ -32,8 +32,7 @@ def dsetContentDict(dset, row=None, col=None):
         # modifying ndim and shape from 0D or 1D to 2D to trigger coming back
         # here to read the 0 or 1 dimansional array
         ('ndim', 2 if dset.ndim in [0,1] else dset.ndim ),
-        ('shape', (1,1) if dset.ndim == 0 else (1,dset.shape[0]) if dset.ndim == 1 else dset.shape),
-
+        ('shape', (1,1) if dset.ndim == 0 else (dset.shape[0],1) if dset.ndim == 1 else dset.shape),
         # actual data
         ('data', dsetChunk(dset, row, col) if row and col else None)
     ])
