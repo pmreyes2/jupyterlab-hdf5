@@ -91,13 +91,13 @@ class HdfBaseHandler(APIHandler):
 
         class CustomEncoder(json.JSONEncoder):
             def default(self, obj):
-                from numpy import int32, float32
+                from numpy import int32, float32, float64
                 if isinstance(obj, complex):
                     #return [obj.real, obj.imag]
                     return "{}+j{}".format(obj.real, obj.imag)
                 if isinstance(obj, int32):
                     return int(obj)
-                if isinstance(obj, float32):
+                if isinstance(obj, float32) or isinstance(obj,float64):
                     return float(obj)
                 if isinstance(obj, bytes):
                     try:

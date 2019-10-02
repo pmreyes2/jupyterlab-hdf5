@@ -20,9 +20,14 @@ def dsetChunk(dset, row, col):
 
 ## create dicts to be converted to json
 def dsetContentDict(dset, row=None, col=None):
+    try:
+        attributes = dict(dset.attrs.items())
+    except Exception as e:
+        print(e)
+        attributes = {}
     return dict([
         # metadata
-        ('attrs', dict(dset.attrs.items())),
+        ('attrs', attributes),
         ('dtype', dset.dtype.str),
         # modifying ndim and shape from 0D or 1D to 2D to trigger coming back
         # here to read the 0 or 1 dimansional array

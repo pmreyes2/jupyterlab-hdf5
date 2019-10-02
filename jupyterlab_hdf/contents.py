@@ -17,7 +17,6 @@ class HdfContentsManager(HdfBaseManager):
     """
     def _get(self, f, uri, row, col):
         obj = f[uri]
-
         if isinstance(obj, h5py.Group):
             return [(groupDict if isinstance(val, h5py.Group) else dsetDict)
                         (name=name, uri=uriJoin(uri, name))
