@@ -177,7 +177,7 @@ function monkeyPatchBrowser(app: JupyterFrontEnd, browser: FileBrowser) {
     }
 
     const { contents } = browser.model.manager.services;
-    if (PathExt.extname(item.path) === ".hdf5") {
+    if ((PathExt.extname(item.path) === ".hdf5" || PathExt.extname(item.path) === ".h5") ){
       // special handling for .hdf5 files
       commands.execute(CommandIDs.openInBrowser);
     } else if (item.type === "directory") {
